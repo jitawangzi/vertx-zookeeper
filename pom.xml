@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>io.vertx</groupId>
-    <artifactId>vertx-ext-parent</artifactId>
-    <version>38</version>
-  </parent>
-
+<!--   <parent> -->
+<!--     <groupId>io.vertx</groupId> -->
+<!--     <artifactId>vertx-ext-parent</artifactId> -->
+<!--     <version>38</version> -->
+<!--   </parent> -->
+<groupId>io.vertx</groupId> 
   <artifactId>vertx-zookeeper</artifactId>
   <version>4.2.2-SNAPSHOT</version>
   <name>Vert.x Zookeeper Cluster Manager</name>
@@ -24,6 +24,7 @@
     <jar.manifest>${project.basedir}/src/main/resources/META-INF/MANIFEST.MF</jar.manifest>
   </properties>
 
+<!-- 
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -35,33 +36,39 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+  -->
 
+<!-- 
   <scm>
     <connection>scm:git:git@github.com:vert-x3/vertx-zookeeper.git</connection>
     <developerConnection>scm:git:git@github.com:vert-x3/vertx-zookeeper.git</developerConnection>
     <url>git@github.com:vert-x3/vertx-zookeeper.git</url>
   </scm>
+  -->
 
   <dependencies>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-codegen</artifactId>
-      <scope>provided</scope>
+      <version>4.2.1</version>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-core</artifactId>
       <scope>provided</scope>
+      <version>4.2.1</version>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web</artifactId>
       <optional>true</optional>
+      <version>4.2.1</version>
     </dependency>
+    
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-docgen</artifactId>
-      <scope>provided</scope>
+      <version>3.5.1</version>
     </dependency>
 
     <dependency>
@@ -176,28 +183,32 @@
       <artifactId>vertx-core</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
+      <version>4.2.1</version>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
+      <version>4.2.1</version>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-service-discovery</artifactId>
-      <scope>test</scope>
+      <version>4.2.1</version>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-service-proxy</artifactId>
       <scope>test</scope>
+      <version>4.2.1</version>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-service-discovery</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
+      <version>4.2.1</version>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
@@ -216,69 +227,42 @@
   <build>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>org.bsc.maven</groupId>
-          <artifactId>maven-processor-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>generate-sources</id>
-              <configuration>
-                <optionMap>
-                  <curator.version>${curator.version}</curator.version>
-                </optionMap>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration>
-            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
-            <systemPropertyVariables>
-              <io.netty.leakDetectionLevel>PARANOID</io.netty.leakDetectionLevel>
-              <buildDirectory>${project.build.directory}</buildDirectory>
-              <vertxVersion>${project.version}</vertxVersion>
-              <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
-            </systemPropertyVariables>
-            <!-- Needs to be small enough to run in a EC2 1.7GB small instance -->
-            <argLine>-Xmx1200M</argLine>
-            <forkCount>1</forkCount>
-            <reuseForks>true</reuseForks>
-          </configuration>
-        </plugin>
+        	<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<!-- 拷贝项目依赖包到lib/目录下 -->
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<!-- 间接依赖也拷贝 -->
+							<excludeTransitive>false</excludeTransitive>
+							<!-- 带上版本号 -->
+							<stripVersion>false</stripVersion>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+						<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<release>11</release>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.5</version>
+			</plugin>
       </plugins>
     </pluginManagement>
   </build>
-
-  <profiles>
-    <profile>
-      <id>coverage</id>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-surefire-plugin</artifactId>
-              <configuration>
-                <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
-                <systemPropertyVariables>
-                  <io.netty.leakDetectionLevel>PARANOID</io.netty.leakDetectionLevel>
-                  <buildDirectory>${project.build.directory}</buildDirectory>
-                  <vertxVersion>${project.version}</vertxVersion>
-                  <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
-                </systemPropertyVariables>
-                <!-- Needs to be small enough to run in a EC2 1.7GB small instance -->
-                <!-- append computed argLine computed by jacoco -->
-                <argLine>-Xmx1200M</argLine>
-                <forkCount>1</forkCount>
-                <reuseForks>true</reuseForks>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-  </profiles>
 
 </project>
