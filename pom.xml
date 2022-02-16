@@ -264,5 +264,15 @@
       </plugins>
     </pluginManagement>
   </build>
-
+	<distributionManagement>
+		<repository>
+			<!-- 需要与settings.xml文件中一致 -->
+			<id>maven-releases</id>
+			<url>http://192.168.1.67:7081/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>maven-snapshots</id>
+			<url>http://192.168.1.67:7081/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
